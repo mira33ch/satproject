@@ -1,0 +1,31 @@
+<!-- <div class="bg-white border border-gray-200 rounded-xl mx-6 mt-6 px-6 py-4 flex items-center justify-between">
+  <div class="text-xl font-semibold text-gray-900">{{ title }}</div>
+
+  <div class="flex items-center gap-3">
+    <button class="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50"></button>
+    <button class="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50"></button>
+
+    <div class="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-2">
+      <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+      <div class="text-sm font-semibold text-gray-900">{{ userName }}</div>
+    </div>
+  </div>
+</div> -->
+<div class="w-full bg-white border border-green-700/70 rounded-2xl px-6 py-4 flex items-center justify-between">
+  <div class="text-xl font-semibold text-gray-900">{{ title }}</div>
+
+  <div class="flex items-center gap-3">
+    <button class="w-10 h-10 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center">
+      <img class="w-5 h-5 text-gray-700" src="assets/icons/bell.svg" alt="notif" />
+    </button>
+
+    <button class="w-10 h-10 rounded-xl border border-gray-200 hover:bg-gray-50 flex items-center justify-center">
+      <img class="w-5 h-5 text-gray-700" src="assets/icons/settings.svg" alt="settings" />
+    </button>
+
+    <div class="flex items-center gap-3 pl-3"   (click)="goToProfile()" >
+      <img src="assets/user.png" class="w-10 h-10 rounded-full object-cover border border-gray-200" alt="user" />
+      <div class="font-semibold text-gray-900">{{ userName }}</div>
+    </div>
+  </div>
+</div>

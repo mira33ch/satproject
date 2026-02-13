@@ -1,0 +1,96 @@
+<div class="w-[720px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-xl px-12 py-10 relative">
+  <!-- Close -->
+  <button
+    type="button"
+    class="absolute top-6 right-6 text-gray-400 hover:text-gray-700"
+    (click)="close.emit()"
+    [attr.aria-label]="'COMMON.CLOSE' | translate"
+  >
+    ✕
+  </button>
+
+  <!-- Title -->
+  <h2 class="text-center text-4xl font-extrabold text-gray-800">
+    {{ 'USERS.ADD_TITLE' | translate }}
+  </h2>
+
+  <div class="mt-10 space-y-6" [formGroup]="form">
+    <!-- Nom -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        {{ 'USERS.LASTNAME_LABEL' | translate }}
+      </label>
+
+      <!-- Si tu as sm-input qui expose value/valueChange -->
+      <sm-input
+        [placeholder]="'USERS.LASTNAME_PLACEHOLDER' | translate"
+        [value]="form.controls.lastName.value"
+        (valueChange)="setCtrlValue('lastName', $event)"
+      ></sm-input>
+
+      <p *ngIf="isInvalid('lastName')" class="mt-2 text-sm text-red-600">
+        {{ 'COMMON.REQUIRED' | translate }}
+      </p>
+    </div>
+
+    <!-- Prénom -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        {{ 'USERS.FIRSTNAME_LABEL' | translate }}
+      </label>
+
+      <sm-input
+        [placeholder]="'USERS.FIRSTNAME_PLACEHOLDER' | translate"
+        [value]="form.controls.firstName.value"
+        (valueChange)="setCtrlValue('firstName', $event)"
+      ></sm-input>
+
+      <p *ngIf="isInvalid('firstName')" class="mt-2 text-sm text-red-600">
+        {{ 'COMMON.REQUIRED' | translate }}
+      </p>
+    </div>
+
+    <!-- Role -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        {{ 'USERS.ROLE_LABEL' | translate }}
+      </label>
+
+      <div class="relative">
+        <select
+          class="w-full h-14 px-4 rounded-xl border border-gray-200 outline-none bg-white appearance-none"
+          [value]="form.controls.role.value"
+          (change)="onRoleChange($event)"
+        >
+          <option value="" disabled>{{ 'USERS.ROLE_PLACEHOLDER' | translate }}</option>
+          <option *ngFor="let r of roles" [value]="r.value">{{ r.label | translate }}</option>
+        </select>
+
+        <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">▾</span>
+      </div>
+
+      <p *ngIf="isInvalid('role')" class="mt-2 text-sm text-red-600">
+        {{ 'COMMON.REQUIRED' | translate }}
+      </p>
+    </div>
+
+    <!-- Footer buttons -->
+    <div class="pt-6 flex items-center justify-between gap-6">
+      <button
+        type="button"
+        class="h-14 flex-1 rounded-xl bg-gray-200 text-gray-400 font-semibold cursor-not-allowed"
+        (click)="close.emit()"
+      >
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+
+      <button
+        type="button"
+        class="h-14 flex-1 rounded-xl bg-green-800 text-white font-semibold hover:bg-green-900"
+        (click)="submit()"
+      >
+        {{ 'USERS.ADD_BTN' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

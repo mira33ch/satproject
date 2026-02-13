@@ -1,0 +1,125 @@
+<div class="w-full">
+  <div class="text-sm text-gray-600 mb-3">{{ 'REPORTS.FORM.TYPE' | translate }}</div>
+
+  <form [formGroup]="form" class="space-y-6">
+    <!-- Type de rapport -->
+    <div class="relative">
+      <select formControlName="reportType"
+              class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white appearance-none">
+        <option value="SYNTHESE_MENSUELLE">{{ 'REPORTS.FORM.MONTHLY' | translate }}</option>
+        <option value="SYNTHESE_HEBDO">{{ 'REPORTS.FORM.WEEKLY' | translate }}</option>
+      </select>
+      <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">▾</span>
+    </div>
+
+    <!-- Radio options -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <label class="flex items-center gap-3">
+        <input type="checkbox" formControlName="includeCartography" class="w-5 h-5">
+        <span class="text-gray-800">{{ 'REPORTS.FORM.CARTOGRAPHY' | translate }}</span>
+      </label>
+
+      <label class="flex items-center gap-3">
+        <input type="checkbox" formControlName="includeStats" class="w-5 h-5">
+        <span class="text-gray-800">{{ 'REPORTS.FORM.STATS' | translate }}</span>
+      </label>
+
+      <label class="flex items-center gap-3">
+        <input type="checkbox" formControlName="includeRawData" class="w-5 h-5">
+        <span class="text-gray-800">{{ 'REPORTS.FORM.RAW' | translate }}</span>
+      </label>
+
+      <label class="flex items-center gap-3">
+        <input type="checkbox" formControlName="includeRecommendations" class="w-5 h-5">
+        <span class="text-gray-800">{{ 'REPORTS.FORM.RECO' | translate }}</span>
+      </label>
+    </div>
+
+    <!-- Paramètres exports -->
+    <div class="bg-gray-50 rounded-2xl p-5 border border-gray-200">
+      <div class="text-lg font-semibold text-gray-900 mb-4">{{ 'REPORTS.FORM.EXPORT_PARAMS' | translate }}</div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Format -->
+        <div>
+          <div class="text-sm font-semibold text-gray-700 mb-2">{{ 'REPORTS.FORM.FORMAT' | translate }}</div>
+          <div class="relative">
+            <select formControlName="exportFormat"
+                    class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white appearance-none">
+              <option value="PDF">PDF</option>
+              <option value="EXCEL">Excel</option>
+              <option value="GEOTIFF">GeoTIFF</option>
+              <option value="RAW">{{ 'REPORTS.FORM.RAW_DATA' | translate }}</option>
+            </select>
+            <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">▾</span>
+          </div>
+        </div>
+
+        <!-- Résolution -->
+        <div>
+          <div class="text-sm font-semibold text-gray-700 mb-2">{{ 'REPORTS.FORM.RESOLUTION' | translate }}</div>
+          <div class="relative">
+            <select formControlName="resolution"
+                    class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white appearance-none">
+              <option value="LOW">{{ 'REPORTS.FORM.LOW' | translate }}</option>
+              <option value="MEDIUM">{{ 'REPORTS.FORM.MEDIUM' | translate }}</option>
+              <option value="HIGH">{{ 'REPORTS.FORM.HIGH' | translate }}</option>
+            </select>
+            <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">▾</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Période -->
+      <div class="mt-4">
+        <div class="text-sm font-semibold text-gray-700 mb-2">{{ 'REPORTS.FORM.PERIOD' | translate }}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="date" formControlName="periodStart"
+                 class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white">
+          <input type="date" formControlName="periodEnd"
+                 class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white">
+        </div>
+      </div>
+
+      <!-- Zone -->
+      <div class="mt-4">
+        <div class="text-sm font-semibold text-gray-700 mb-2">{{ 'REPORTS.FORM.ZONE' | translate }}</div>
+        <div class="relative">
+          <select formControlName="zoneId"
+                  class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white appearance-none">
+            <option value="" disabled>{{ 'REPORTS.FORM.CHOOSE_ZONE' | translate }}</option>
+            <option *ngFor="let z of zones" [value]="z.value">{{ z.label }}</option>
+          </select>
+          <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">▾</span>
+        </div>
+      </div>
+
+      <!-- Phénomène -->
+      <div class="mt-4">
+        <div class="text-sm font-semibold text-gray-700 mb-2">{{ 'REPORTS.FORM.PHENOMENON' | translate }}</div>
+        <div class="relative">
+          <select formControlName="phenomenonId"
+                  class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none bg-white appearance-none">
+            <option *ngFor="let p of phenomena" [value]="p.value">{{ p.label }}</option>
+          </select>
+          <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer buttons -->
+    <div class="flex items-center justify-center gap-6 pt-2">
+      <button type="button"
+              class="w-72 h-12 rounded-xl bg-gray-200 text-gray-500 font-semibold cursor-not-allowed"
+              (click)="cancel.emit()">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+
+      <button type="button"
+              class="w-72 h-12 rounded-xl bg-green-800 text-white font-semibold hover:bg-green-900"
+              (click)="submit()">
+        {{ 'REPORTS.FORM.GENERATE' | translate }}
+      </button>
+    </div>
+  </form>
+</div>

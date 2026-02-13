@@ -1,0 +1,129 @@
+<div class="w-[560px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-xl px-14 py-12 relative">
+  <!-- Close -->
+  <button
+    type="button"
+    class="absolute top-6 right-6 text-gray-400 hover:text-gray-700 text-xl"
+    (click)="cancel()"
+    aria-label="Close"
+  >
+    ✕
+  </button>
+
+  <!-- Title -->
+  <h2 class="text-center text-4xl font-extrabold text-gray-900">
+    Ajouter une alerte
+  </h2>
+
+  <!-- Form -->
+  <div class="mt-10 space-y-3">
+    <!-- Type de phénomène -->
+    <div>
+      <label class="block text-xl font-semibold text-gray-900 mb-3">
+        Type de phénomène
+      </label>
+
+      <div class="relative">
+        <select
+          class="w-full h-12 px-2 rounded-xl border border-gray-300 outline-none bg-white appearance-none text-sm text-gray-400"
+          [value]="form.phenomenon"
+          (change)="onSelectChange('phenomenon', $event)"
+        >
+          <option value="" disabled>Choisissez un phénomène</option>
+          <option *ngFor="let p of phenomena" [value]="p.value">
+            {{ p.label }}
+          </option>
+        </select>
+
+        <span class="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-gray-500">
+          <img src="assets/icons/chevron-down.svg" class="w-5 h-5" alt="">
+        </span>
+      </div>
+
+      <p *ngIf="errors.phenomenon" class="mt-2 text-sm text-red-600">{{ errors.phenomenon }}</p>
+    </div>
+
+    <!-- Date -->
+    <div>
+      <label class="block text-xl font-semibold text-gray-900 mb-3">
+        Date
+      </label>
+
+      <div class="relative">
+        <!-- input natif: simple & fiable -->
+        <input
+          type="date"
+          class="w-full h-12 px-2 rounded-xl border border-gray-300 outline-none bg-white text-sm text-gray-400"
+          [value]="form.date"
+          (input)="onInput('date', $event)"
+        />
+
+        <!-- <span class="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-gray-500">
+          <img src="assets/icons/calendar.svg" class="w-6 h-6" alt="">
+        </span> -->
+      </div>
+
+      <p *ngIf="errors.date" class="mt-2 text-sm text-red-600">{{ errors.date }}</p>
+    </div>
+
+    <!-- Localisation -->
+    <div>
+      <label class="block text-xl font-semibold text-gray-900 mb-3">
+        Localisation
+      </label>
+
+      <!-- Tu peux remplacer par sm-input si tu veux, mais sans ngModel -->
+      <sm-input
+        [placeholder]="'Entrez une localisation'"
+        [value]="form.location"
+        (valueChange)="onSmInput('location', $event)"
+      ></sm-input>
+
+      <p *ngIf="errors.location" class="mt-2 text-sm text-red-600">{{ errors.location }}</p>
+    </div>
+
+    <!-- Niveau -->
+    <div>
+      <label class="block text-xl font-semibold text-gray-900 mb-3">
+        Niveau
+      </label>
+
+      <div class="relative">
+        <select
+          class="w-full h-12 px-2 rounded-xl border border-gray-300 outline-none bg-white appearance-none text-sm text-gray-400"
+          [value]="form.level"
+          (change)="onSelectChange('level', $event)"
+        >
+          <option value="" disabled>Choisissez un niveau</option>
+          <option *ngFor="let l of levels" [value]="l.value">
+            {{ l.label }}
+          </option>
+        </select>
+
+        <span class="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-gray-500">
+          <img src="assets/icons/chevron-down.svg" class="w-5 h-5" alt="">
+        </span>
+      </div>
+
+      <p *ngIf="errors.level" class="mt-2 text-sm text-red-600">{{ errors.level }}</p>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="mt-12 grid grid-cols-2 gap-10">
+    <button
+      type="button"
+      class="h-14 rounded-xl bg-gray-200 text-gray-500 text-xl font-semibold disabled:opacity-60"
+      (click)="cancel()"
+    >
+      Annuler
+    </button>
+
+    <button
+      type="button"
+      class="h-14 rounded-xl bg-green-800 text-white text-xl font-semibold hover:bg-green-900"
+      (click)="submit()"
+    >
+      Confirmer
+    </button>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+
+<div class="h-screen w-full bg-gray-50 flex gap-6 p-6">
+  <app-dashboard-sidebar class="shrink-0 hidden lg:block w-[280px]"></app-dashboard-sidebar>
+
+
+    <!-- Mobile sidebar (simple) -->
+  <div class="lg:hidden w-full">
+    <app-dashboard-topbar [title]="title"></app-dashboard-topbar>
+    <div class="p-4">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <div class="hidden lg:flex flex-1  flex-col gap-6 overflow-hidden">
+    <app-dashboard-topbar class="shrink-0"></app-dashboard-topbar>
+
+    <!-- IMPORTANT: flex-1 + overflow-hidden => l'enfant peut faire h-full -->
+    <div class="flex-1 overflow-hidden">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

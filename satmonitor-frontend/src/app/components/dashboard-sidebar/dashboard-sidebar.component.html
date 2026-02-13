@@ -1,0 +1,50 @@
+<div class="h-full w-[260px] bg-white border border-green-700/70 rounded-2xl p-6 flex flex-col">
+  <div class="flex items-center gap-3">
+    <img src="assets/logo_2.png" class="h-full w-full" alt="SatMonitor" />
+   
+  </div>
+
+  <div class="mt-8 flex-1 space-y-3">
+    <a routerLink="/dashboard" routerLinkActive="text-green-700"
+       class="flex items-center gap-3 text-gray-800 hover:text-green-700">
+      <span class="w-6 h-6 text-green-700">
+        <img class="w-6 h-6" src="assets/icons/home.svg" alt="home" />
+      </span>
+      <span class="text-lg">Dashboard</span>
+    </a>
+
+    <a routerLink="/dashboard/phenomena" routerLinkActive="text-green-700"
+       class="flex items-center gap-3 text-gray-800 hover:text-green-700">
+      <img class="w-6 h-6" src="assets/icons/phenomena.svg" alt="phenomena" />
+      <span class="text-lg">Phénomènes</span>
+    </a>
+
+    <a routerLink="/dashboard/analyses" routerLinkActive="text-green-700"
+       class="flex items-center gap-3 text-gray-800 hover:text-green-700">
+      <img class="w-6 h-6" src="assets/icons/analysis.svg" alt="analysis" />
+      <span class="text-lg">Analyses</span>
+    </a>
+
+    <a routerLink="/dashboard/alerts" routerLinkActive="text-green-700"
+       class="flex items-center gap-3 text-gray-800 hover:text-green-700">
+      <img class="w-6 h-6" src="assets/icons/alertdash.svg" alt="alerts" />
+      <span class="text-lg">Alertes</span>
+    </a>
+
+    <a routerLink="/dashboard/reports" routerLinkActive="text-green-700"
+       class="flex items-center gap-3 text-gray-800 hover:text-green-700">
+      <img class="w-6 h-6" src="assets/icons/report.svg" alt="reports" />
+      <span class="text-lg">Rapports</span>
+    </a>
+       <a routerLink="/dashboard/users" routerLinkActive="text-green-700"
+       class="flex items-center gap-3 text-gray-800 hover:text-green-700">
+      <img class="w-6 h-6" src="assets/icons/user.svg" alt="reports" />
+      <span class="text-lg">Utilisateurs</span>
+    </a>
+  </div>
+
+  <button class="mt-6 flex items-center gap-3 text-gray-800 hover:text-green-700">
+    <img class="w-6 h-6" src="assets/icons/logout.svg" alt="logout" />
+    <span class="text-lg">Deconnexion</span>
+  </button>
+</div>

@@ -1,0 +1,78 @@
+<div class="relative w-full h-full">
+  <div #mapEl class="absolute inset-0"></div>
+
+  <div
+    *ngIf="compareEnabled"
+    class="compare-divider"
+    [style.left.%]="splitRatio * 100"
+    (pointerdown)="onDividerPointerDown($event)"
+  >
+    <div class="compare-divider-line"></div>
+    <div class="compare-divider-handle" aria-hidden="true"></div>
+  </div>
+
+  <button
+    type="button"
+    class="absolute bottom-4 left-4 z-20 overflow-hidden rounded-xl border border-green-700/40 shadow bg-white hover:bg-gray-50"
+    (click)="toggleBasemap()"
+  >
+    <div class="flex items-stretch">
+      <div class="w-14 h-12 relative">
+        <img class="absolute inset-0 w-full h-full object-cover opacity-90" [src]="currentBasemapThumb" alt="thumb" />
+        <div class="absolute inset-0 bg-white/30"></div>
+      </div>
+
+      <div class="h-12 px-4 flex items-center gap-2">
+        <img class="w-5 h-5" [src]="asset('icons/diamond.svg')" alt="diamond" />
+        <span class="text-sm font-semibold">Fonds</span>
+      </div>
+    </div>
+  </button>
+
+  <div
+    *ngIf="showBasemapPanel"
+    class="absolute bottom-20 left-4 z-30 w-[260px] h-1/2 rounded-xl bg-white border border-green-700/30 shadow-lg overflow-auto"
+  >
+    <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+      <div class="font-semibold text-gray-900 text-sm">Fonds de carte</div>
+      <button type="button" class="text-gray-500 hover:text-gray-800" (click)="toggleBasemap()">X</button>
+    </div>
+
+    <div class="p-3 space-y-2">
+      <button
+        type="button"
+        *ngFor="let bm of basemaps"
+        class="w-full flex items-center gap-3 p-2 rounded-lg border hover:bg-gray-50"
+        [ngClass]="bm.id === activeBasemapId ? 'border-green-700/50 bg-green-50/40' : 'border-gray-200'"
+        (click)="setBasemap(bm.id)"
+      >
+        <img class="w-12 h-10 rounded-md object-cover border border-gray-200" [src]="bm.thumb" alt="thumb" />
+        <div class="text-left">
+          <div class="text-sm font-semibold text-gray-900">{{ bm.label }}</div>
+          <div class="text-xs text-gray-500">{{ bm.desc }}</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-3">
+    <button
+      type="button"
+      class="w-12 h-12 rounded-xl bg-white border border-green-700/40 shadow hover:bg-gray-50 flex items-center justify-center"
+      (click)="onSettingsClick()"
+      title="Parametres"
+    >
+      <img class="w-6 h-6" [src]="asset('icons/target.svg')" alt="settings" />
+    </button>
+
+    <div class="bg-white border flex border-green-700/40 shadow rounded-xl overflow-hidden">
+      <button class="w-14 h-12 flex items-center justify-center hover:bg-gray-50" (click)="zoomIn()">
+        <span class="text-xl leading-none">+</span>
+      </button>
+      <div class="h-px bg-gray-200"></div>
+      <button class="w-14 h-12 flex items-center justify-center hover:bg-gray-50" (click)="zoomOut()">
+        <span class="text-xl leading-none">-</span>
+      </button>
+    </div>
+  </div>
+</div>

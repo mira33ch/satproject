@@ -1,0 +1,167 @@
+{
+    "COMMON": {
+        "CLOSE": "Fermer",
+        "OR": "Ou",
+        "CANCEL": "Annuler",
+        "SUBMIT": "Valider",
+        "REQUIRED": "Ce champ est obligatoire.",
+        "NEXT": "Suivant",
+        "PREVIOUS": "Précédent"
+    },
+    "NAVBAR": {
+        "TAGLINE": "Global Phenomena Tracking"
+    },
+    "HOME": {
+        "TITLE": "Votre application de suivi d'indicateurs par imagerie satellitaire",
+        "SUBTITLE": "Une interface unique permettant d'accéder simplement à l’ensemble des données satellitaires pertinentes pour le suivi des risques naturels.",
+        "CTA": "En savoir plus sur l'application"
+    },
+    "AUTH": {
+        "LOGIN": "Se connecter",
+        "SIGNUP": "S’inscrire",
+        "SIGNUP_TITLE_UPPER": "INSCRIPTION",
+        "LOGIN_TITLE_UPPER": "CONNEXION",
+        "EMAIL_LABEL": "Email",
+        "EMAIL_PLACEHOLDER": "Entrer votre adresse email",
+        "PASSWORD_LABEL": "Mot de passe",
+        "PASSWORD_PLACEHOLDER": "Entrer votre mot de passe",
+        "REMEMBER_ME": "Se souvenir de moi",
+        "FORGOT_PASSWORD": "Mot de passe oublié?",
+        "NO_ACCOUNT": "Vous n'avez pas encore de compte ?",
+        "SOCIAL": {
+            "GOOGLE": "Se connecter avec Google",
+            "FACEBOOK": "Se connecter avec Facebook",
+            "APPLE": "Se connecter avec Apple"
+        },
+        "CONFIRM_EMAIL": {
+            "TITLE": "Validation email",
+            "SUBTITLE": "Confirmer la validité de cette adresse e-mail",
+            "VALIDATE": "Valider",
+            "EMAIL_FALLBACK": "Adresse e-mail",
+            "SUCCESS": "Adresse e-mail validée avec succès.",
+            "ERROR_TOKEN_MISSING": "Lien invalide ou expiré (token manquant)."
+        }
+    },
+    "CONFIRM_EMAIL": {
+        "TITLE": "Validation email",
+        "SUBTITLE": "Confirmer la validité de cette adresse e-mail",
+        "VALIDATE": "Valider",
+        "EMAIL_FALLBACK": "Adresse e-mail",
+        "SUCCESS": "Adresse e-mail validée avec succès.",
+        "ERROR_TOKEN_MISSING": "Lien invalide ou expiré (token manquant)."
+    },
+    "LANDING": {
+        "TITLE": "Votre application de suivi d'indicateurs\npar imagerie satellitaire",
+        "SUBTITLE": "Une interface unique permettant d'accéder simplement à l’ensemble des données satellitaires pertinentes pour le suivi des risques naturels.",
+        "CTA": "En savoir plus sur l'application"
+    },
+    "REGISTER": {
+        "STEP1": {
+            "TITLE": "Entreprise",
+            "COMPANY_NAME_LABEL": "Nom de l’entreprise",
+            "COMPANY_NAME_PLACEHOLDER": "Entrer le nom de l’entreprise",
+           "COMPANY_COUNTRY_LABEL": "Pays de l’entreprise",
+           "COMPANY_COUNTRY_PLACEHOLDER": "Entrer le pays de l’entreprise",
+            "COMPANY_ADDRESS_LABEL": "Adresse de l’entreprise",
+            "COMPANY_ADDRESS_PLACEHOLDER": "Entrer l’adresse de l’entreprise",
+            "COMPANY_PHONE_LABEL": "Numéro de téléphone", 
+            "COMPANY_PHONE_PLACEHOLDER": "Entrer le numéro de téléphone de l'entreprise",
+            "INVALID_PHONE": "Format de numéro de téléphone invalide"
+        },
+        "STEP2": {
+            "TITLE": "Compte",
+            "USERNAME_LABEL": "Nom d’utilisateur",
+            "USERNAME_PLACEHOLDER": "Entrer un nom",
+            "PHONE_LABEL": "Numéro téléphone",
+            "PHONE_PLACEHOLDER": "Entrer un numéro",
+            "INVALID_PHONE": "Format de numéro de téléphone invalide", 
+            "EMAIL_LABEL": "Adresse e-mail",
+            "EMAIL_PLACEHOLDER": "Entrer une adresse e-mail",
+            "PASSWORD_LABEL": "Mot de passe",
+            "PASSWORD_PLACEHOLDER": "Entrer un mot de passe",
+            "CONFIRM_PASSWORD_LABEL": "Confirmer le mot de passe",
+            "CONFIRM_PASSWORD_PLACEHOLDER": "Entrer à nouveau le mot de passe",
+            "PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas."
+        }
+    },
+    "REPORTS": {
+    "TITLE": "Rapports et Exports",
+    "FORM": {
+      "TYPE": "Type de rapport",
+      "MONTHLY": "Synthèse mensuelle",
+      "WEEKLY": "Synthèse hebdomadaire",
+      "CARTOGRAPHY": "Cartographie",
+      "STATS": "Statistiques",
+      "RAW": "Données brutes",
+      "RECO": "Recommandations",
+      "EXPORT_PARAMS": "Paramètres exports",
+      "FORMAT": "Format",
+      "RAW_DATA": "Données brutes",
+      "RESOLUTION": "Résolution",
+      "LOW": "Faible",
+      "MEDIUM": "Moyenne",
+      "HIGH": "Élevée",
+      "PERIOD": "Période",
+      "ZONE": "Zone",
+      "CHOOSE_ZONE": "Choisissez une zone",
+      "PHENOMENON": "Phénomène",
+      "GENERATE": "Générer"
+    },
+    "LIST": {
+      "TITLE": "Liste des rapports",
+      "SEARCH": "Rechercher"
+    },
+    "MENU": {
+      "RAW": "Données brutes",
+      "DELETE": "Supprimer"
+    }
+  },
+  "USERS": {
+    "TITLE": "Gestion des utilisateurs",
+    "SEARCH_PLACEHOLDER": "Rechercher un utilisateur",
+    "ADD": "Ajouter",
+    "ADD_TITLE": "Ajouter un utilisateur",
+    "ADD_BTN": "Ajouter",
+
+    "COL_LASTNAME": "Nom",
+    "COL_FIRSTNAME": "Prénom",
+    "COL_ROLE": "Rôle",
+    "TOGGLE": "Activer / désactiver",
+
+    "LASTNAME_LABEL": "Nom",
+    "LASTNAME_PLACEHOLDER": "Entrez un nom",
+    "FIRSTNAME_LABEL": "Prénom",
+    "FIRSTNAME_PLACEHOLDER": "Entrez un prénom",
+    "ROLE_LABEL": "Rôle",
+    "ROLE_PLACEHOLDER": "Choisissez",
+
+    "KPI_TASKS": "Tâches en cours",
+    "KPI_CPU": "CPU",
+    "KPI_STORAGE": "Stockage",
+    "KPI_RAM": "RAM",
+    "KPI_NETWORK": "Réseau",
+    "KPI_API": "API",
+
+    "ROLES": {
+      "ADMIN": "Administrateur",
+      "DEV": "Développeur",
+      "DESIGNER": "Designer",
+      "PM": "Chef de Projet",
+      "ANALYST": "Analyste",
+      "HR": "Ressources Humaines"
+    }
+  },
+    "ERRORS": {
+    "REGISTER": {
+      "USERNAME_EXISTS": "Ce nom d'utilisateur est déjà pris",
+      "EMAIL_EXISTS": "Cette adresse email est déjà utilisée",
+      "PHONE_EXISTS": "Ce numéro de téléphone est déjà utilisé",
+      "NAME_EXISTS": "Ce nom d'entreprise est déjà utilisé"
+    },
+    "AUTH": {
+      "EMAIL_NOT_VERIFIED": "Veuillez vérifier votre adresse email avant de vous connecter",
+      "INVALID_CREDENTIALS": "Email ou mot de passe incorrect",
+      "USER_NOT_FOUND": "Utilisateur non trouvé"
+    }
+   }
+}

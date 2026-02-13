@@ -1,0 +1,430 @@
+diff --git a/package.json b/package.json
+index 9740385..b0541bb 100644
+--- a/package.json
++++ b/package.json
+@@ -3,7 +3,7 @@
+   "version": "0.0.0",
+   "scripts": {
+     "ng": "ng",
+-    "start": "ng serve",
++    "start": "ng serve --proxy-config proxy.conf.json",
+     "build": "ng build",
+     "watch": "ng build --watch --configuration development",
+     "test": "ng test"
+diff --git a/src/app/components/sat-map/sat-map.component.html b/src/app/components/sat-map/sat-map.component.html
+index 4dc8e77..33abfe2 100644
+--- a/src/app/components/sat-map/sat-map.component.html
++++ b/src/app/components/sat-map/sat-map.component.html
+@@ -1,3 +1,44 @@
+-<div class="w-full h-full rounded-xl border border-gray-200 overflow-hidden bg-white">
++<div class="w-full h-full rounded-xl border border-gray-200 overflow-hidden bg-white relative">
+   <div #mapEl class="w-full h-full"></div>
++
++  <div
++    class="absolute top-3 right-3 z-10 w-[280px] max-w-[calc(100%-1.5rem)] bg-white/95 backdrop-blur border border-gray-200 rounded-xl shadow p-3 text-gray-900">
++    <div class="text-sm font-semibold">GeoServer (satmonitor)</div>
++
++    <label class="mt-2 flex items-center gap-2 text-sm">
++      <input type="checkbox" [(ngModel)]="wmsVisible" (change)="onOverlayToggle()" />
++      <span>Afficher la couche</span>
++    </label>
++
++    <div class="mt-3">
++      <label class="text-xs text-gray-600">Layer</label>
++      <select
++        class="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1 text-sm bg-white"
++        [(ngModel)]="selectedLayerId"
++        (change)="onLayerChange()"
++      >
++        <option *ngFor="let l of availableLayers" [value]="l.id">{{ l.label }}</option>
++      </select>
++    </div>
++
++    <div class="mt-3">
++      <div class="flex items-center justify-between">
++        <label class="text-xs text-gray-600">Opacity</label>
++        <div class="text-xs text-gray-500">{{ wmsOpacity | number: '1.2-2' }}</div>
++      </div>
++      <input class="w-full" type="range" min="0.6" max="0.9" step="0.05" [(ngModel)]="wmsOpacity" (input)="onOpacityChange()" />
++    </div>
++
++    <div class="mt-3 flex items-center gap-2">
++      <button type="button" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm" (click)="zoomToLayer()">
++        Zoom sur données
++      </button>
++      <div class="text-xs text-gray-500">Cliquez sur la carte pour une valeur</div>
++    </div>
++
++    <div *ngIf="lastFeatureInfo" class="mt-3 text-xs text-gray-700">
++      <div class="font-semibold">GetFeatureInfo</div>
++      <div class="font-mono break-all">{{ lastFeatureInfo }}</div>
++    </div>
++  </div>
+ </div>
+diff --git a/src/app/components/sat-map/sat-map.component.spec.ts b/src/app/components/sat-map/sat-map.component.spec.ts
+index e555e2a..659cf0d 100644
+--- a/src/app/components/sat-map/sat-map.component.spec.ts
++++ b/src/app/components/sat-map/sat-map.component.spec.ts
+@@ -1,4 +1,6 @@
+ import { ComponentFixture, TestBed } from '@angular/core/testing';
++import { HttpClientTestingModule } from '@angular/common/http/testing';
++import { FormsModule } from '@angular/forms';
+ 
+ import { SatMapComponent } from './sat-map.component';
+ 
+@@ -8,7 +10,8 @@ describe('SatMapComponent', () => {
+ 
+   beforeEach(() => {
+     TestBed.configureTestingModule({
+-      declarations: [SatMapComponent]
++      declarations: [SatMapComponent],
++      imports: [FormsModule, HttpClientTestingModule],
+     });
+     fixture = TestBed.createComponent(SatMapComponent);
+     component = fixture.componentInstance;
+diff --git a/src/app/components/sat-map/sat-map.component.ts b/src/app/components/sat-map/sat-map.component.ts
+index 929ccba..b1e6443 100644
+--- a/src/app/components/sat-map/sat-map.component.ts
++++ b/src/app/components/sat-map/sat-map.component.ts
+@@ -1,38 +1,303 @@
++import { HttpClient } from '@angular/common/http';
+ import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
++import { firstValueFrom } from 'rxjs';
+ import Map from 'ol/Map';
+ import View from 'ol/View';
+ import TileLayer from 'ol/layer/Tile';
+ import OSM from 'ol/source/OSM';
+-import { fromLonLat } from 'ol/proj';
++import TileWMS from 'ol/source/TileWMS';
++import { unByKey } from 'ol/Observable';
++import { fromLonLat, toLonLat } from 'ol/proj';
++import type { EventsKey } from 'ol/events';
++import { environment } from 'src/environments/environment';
++
++type SatmonitorLayerStyle = 'ndvi' | 'ndmi' | 'delta_ndvi' | 'delta_ndmi' | 'change_mask';
++
++interface SatmonitorWmsLayerOption {
++  id: string;
++  label: string;
++  layerName: string; // Fully qualified: satmonitor:<layer>
++  styleName: SatmonitorLayerStyle;
++}
+ 
+ @Component({
+   selector: 'app-sat-map',
+   templateUrl: './sat-map.component.html',
+   styleUrls: ['./sat-map.component.css']
+ })
+-export class SatMapComponent {
+-@ViewChild('mapEl', { static: true }) mapEl!: ElementRef<HTMLDivElement>;
++export class SatMapComponent implements AfterViewInit, OnDestroy {
++  @ViewChild('mapEl', { static: true }) mapEl!: ElementRef<HTMLDivElement>;
+   @Input() centerLonLat: [number, number] = [-17.44406, 14.6937]; // Dakar
+   @Input() zoom = 11;
+ 
+   private map?: Map;
++  private wmsLayer?: TileLayer<TileWMS>;
++  private wmsSource?: TileWMS;
++  private featureInfoKey?: EventsKey;
++  private capabilitiesDocPromise?: Promise<Document | null>;
++
++  readonly availableLayers: SatmonitorWmsLayerOption[] = [
++    {
++      id: 'deforestation_ndvi_date1',
++      label: 'NDVI (date 1)',
++      layerName: 'satmonitor:deforestation_ndvi_date1',
++      styleName: 'ndvi',
++    },
++    {
++      id: 'deforestation_ndvi_date2',
++      label: 'NDVI (date 2)',
++      layerName: 'satmonitor:deforestation_ndvi_date2',
++      styleName: 'ndvi',
++    },
++    {
++      id: 'deforestation_ndmi_date1',
++      label: 'NDMI (date 1)',
++      layerName: 'satmonitor:deforestation_ndmi_date1',
++      styleName: 'ndmi',
++    },
++    {
++      id: 'deforestation_ndmi_date2',
++      label: 'NDMI (date 2)',
++      layerName: 'satmonitor:deforestation_ndmi_date2',
++      styleName: 'ndmi',
++    },
++    {
++      id: 'deforestation_delta_ndvi',
++      label: 'Δ NDVI',
++      layerName: 'satmonitor:deforestation_delta_ndvi',
++      styleName: 'delta_ndvi',
++    },
++    {
++      id: 'deforestation_delta_ndmi',
++      label: 'Δ NDMI',
++      layerName: 'satmonitor:deforestation_delta_ndmi',
++      styleName: 'delta_ndmi',
++    },
++    {
++      id: 'deforestation_change_mask',
++      label: 'Change mask',
++      layerName: 'satmonitor:deforestation_change_mask',
++      styleName: 'change_mask',
++    },
++  ];
++
++  selectedLayerId = this.availableLayers[0]?.id ?? '';
++  wmsVisible = true;
++  wmsOpacity = 0.8; // 0.6–0.9 per requirements
++  lastFeatureInfo?: string;
++
++  constructor(private http: HttpClient) {}
++
++  private get wmsUrl(): string {
++    return `${environment.geoserverBase}/${environment.geoserverWorkspace}/wms`;
++  }
++
++  get selectedLayer(): SatmonitorWmsLayerOption | undefined {
++    return this.availableLayers.find((l) => l.id === this.selectedLayerId);
++  }
+ 
+   ngAfterViewInit(): void {
++    const selected = this.selectedLayer;
++    if (!selected) return;
++
++    this.wmsSource = new TileWMS({
++      url: this.wmsUrl,
++      projection: 'EPSG:3857',
++      params: {
++        SERVICE: 'WMS',
++        VERSION: '1.1.0',
++        LAYERS: selected.layerName,
++        STYLES: selected.styleName,
++        FORMAT: 'image/png',
++        TRANSPARENT: true,
++        TILED: true,
++        SRS: 'EPSG:3857',
++      },
++      serverType: 'geoserver',
++    });
++
++    this.wmsLayer = new TileLayer({
++      source: this.wmsSource,
++      visible: this.wmsVisible,
++      opacity: this.wmsOpacity,
++    });
++
+     this.map = new Map({
+       target: this.mapEl.nativeElement,
+       layers: [
+         new TileLayer({
+           source: new OSM()
+-        })
++        }),
++        this.wmsLayer,
+       ],
+       view: new View({
++        projection: 'EPSG:3857',
+         center: fromLonLat(this.centerLonLat),
+         zoom: this.zoom
+       })
+     });
++
++    this.featureInfoKey = this.map.on('singleclick', (evt) => {
++      if (!this.map || !this.wmsSource || !this.wmsLayer?.getVisible()) return;
++
++      const view = this.map.getView();
++      const resolution = view.getResolution();
++      const projection = view.getProjection();
++      const selectedLayer = this.selectedLayer;
++      if (!resolution || !selectedLayer) return;
++
++      const url = this.wmsSource.getFeatureInfoUrl(evt.coordinate, resolution, projection, {
++        INFO_FORMAT: 'application/json',
++        QUERY_LAYERS: selectedLayer.layerName,
++        FEATURE_COUNT: 10,
++        _t: Date.now(),
++      });
++      if (!url) return;
++
++      const [lon, lat] = toLonLat(evt.coordinate, projection);
++      this.lastFeatureInfo = `Loading… (${lon.toFixed(5)}, ${lat.toFixed(5)})`;
++
++      this.http.get<any>(url).subscribe({
++        next: (data) => {
++          const value = this.extractRasterValue(data);
++          this.lastFeatureInfo =
++            value !== undefined ? `${value} (${lon.toFixed(5)}, ${lat.toFixed(5)})` : `No data (${lon.toFixed(5)}, ${lat.toFixed(5)})`;
++          // Keep a debug trail without impacting the UI
++          // eslint-disable-next-line no-console
++          console.log('GetFeatureInfo', { url, data });
++        },
++        error: (err) => {
++          this.lastFeatureInfo = `GetFeatureInfo error (${lon.toFixed(5)}, ${lat.toFixed(5)})`;
++          // eslint-disable-next-line no-console
++          console.error('GetFeatureInfo error', { url, err });
++        },
++      });
++    });
++  }
++
++  onOverlayToggle(): void {
++    this.wmsLayer?.setVisible(this.wmsVisible);
++    // Cache-bust when visibility toggles in case tiles were cached with old params
++    this.wmsSource?.updateParams({ _t: Date.now() });
++  }
++
++  onOpacityChange(): void {
++    const clamped = Math.max(0.6, Math.min(0.9, this.wmsOpacity));
++    this.wmsOpacity = clamped;
++    this.wmsLayer?.setOpacity(clamped);
++  }
++
++  onLayerChange(): void {
++    const selected = this.selectedLayer;
++    if (!selected || !this.wmsSource) return;
++
++    this.lastFeatureInfo = undefined;
++    this.wmsSource.updateParams({
++      VERSION: '1.1.0',
++      LAYERS: selected.layerName,
++      STYLES: selected.styleName,
++      FORMAT: 'image/png',
++      TRANSPARENT: true,
++      TILED: true,
++      SRS: 'EPSG:3857',
++      _t: Date.now(),
++    });
++  }
++
++  async zoomToLayer(): Promise<void> {
++    const map = this.map;
++    const selected = this.selectedLayer;
++    if (!map || !selected) return;
++
++    const doc = await this.getCapabilitiesDoc();
++    if (!doc) return;
++
++    const extent = this.findLayerBbox(doc, selected.layerName, 'EPSG:3857');
++    if (!extent) {
++      // eslint-disable-next-line no-console
++      console.warn('No EPSG:3857 bbox found in GetCapabilities for layer', selected.layerName);
++      return;
++    }
++
++    const [minx, miny, maxx, maxy] = extent;
++    const isValid = [minx, miny, maxx, maxy].every(Number.isFinite) && minx < maxx && miny < maxy;
++    if (!isValid) return;
++
++    map.getView().fit(extent, { padding: [24, 24, 24, 24], duration: 250 });
++  }
++
++  private extractRasterValue(data: any): string | undefined {
++    const features = data?.features;
++    if (!Array.isArray(features) || features.length === 0) return undefined;
++
++    const props = features[0]?.properties;
++    if (!props || typeof props !== 'object') return undefined;
++
++    if (props.GRAY_INDEX !== undefined && props.GRAY_INDEX !== null) return String(props.GRAY_INDEX);
++
++    for (const value of Object.values(props)) {
++      if (typeof value === 'number') return String(value);
++      if (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))) return value;
++    }
++
++    return undefined;
++  }
++
++  private async getCapabilitiesDoc(): Promise<Document | null> {
++    if (this.capabilitiesDocPromise) return this.capabilitiesDocPromise;
++
++    const url = `${this.wmsUrl}?service=WMS&version=1.1.0&request=GetCapabilities&_t=${Date.now()}`;
++    this.capabilitiesDocPromise = firstValueFrom(this.http.get(url, { responseType: 'text' as const }))
++      .then((xml) => new DOMParser().parseFromString(xml, 'text/xml'))
++      .catch((err) => {
++        // eslint-disable-next-line no-console
++        console.error('Failed to load WMS GetCapabilities', { url, err });
++        return null;
++      });
++
++    return this.capabilitiesDocPromise;
++  }
++
++  private findLayerBbox(doc: Document, layerName: string, srs: string): [number, number, number, number] | null {
++    const layerEls = Array.from(doc.getElementsByTagName('Layer'));
++    const targetLayer = layerEls.find((layerEl) => {
++      const nameEl = Array.from(layerEl.children).find((c) => c.tagName === 'Name');
++      return (nameEl?.textContent ?? '').trim() === layerName;
++    });
++    if (!targetLayer) return null;
++
++    const bboxEls = Array.from(targetLayer.getElementsByTagName('BoundingBox'));
++    const srsCandidates = srs === 'EPSG:3857' ? ['EPSG:3857', 'EPSG:900913'] : [srs];
++    const bboxEl = bboxEls.find((el) => srsCandidates.includes((el.getAttribute('SRS') || el.getAttribute('CRS') || '').trim()));
++
++    if (bboxEl) {
++      const minx = Number(bboxEl.getAttribute('minx'));
++      const miny = Number(bboxEl.getAttribute('miny'));
++      const maxx = Number(bboxEl.getAttribute('maxx'));
++      const maxy = Number(bboxEl.getAttribute('maxy'));
++      if (![minx, miny, maxx, maxy].every(Number.isFinite)) return null;
++      return [minx, miny, maxx, maxy];
++    }
++
++    // Fallback: WMS 1.1.0 geographic bbox (lon/lat), transformed to EPSG:3857
++    const llEl = targetLayer.getElementsByTagName('LatLonBoundingBox').item(0);
++    if (!llEl) return null;
++
++    const minLon = Number(llEl.getAttribute('minx'));
++    const minLat = Number(llEl.getAttribute('miny'));
++    const maxLon = Number(llEl.getAttribute('maxx'));
++    const maxLat = Number(llEl.getAttribute('maxy'));
++    if (![minLon, minLat, maxLon, maxLat].every(Number.isFinite)) return null;
++
++    const [minx, miny] = fromLonLat([minLon, minLat]);
++    const [maxx, maxy] = fromLonLat([maxLon, maxLat]);
++    if (![minx, miny, maxx, maxy].every(Number.isFinite)) return null;
++
++    return [minx, miny, maxx, maxy];
+   }
+ 
+   ngOnDestroy(): void {
++    if (this.featureInfoKey) unByKey(this.featureInfoKey);
+     this.map?.setTarget(undefined);
+     this.map = undefined;
+   }
+diff --git a/src/environments/environments.ts b/src/environments/environments.ts
+index 93f1a61..f4d3504 100644
+--- a/src/environments/environments.ts
++++ b/src/environments/environments.ts
+@@ -1,3 +1 @@
+-export const environment = {
+-  apiUrl: 'http://localhost:7079'
+-};
+\ No newline at end of file
++export { environment } from './environment';
+diff --git a/src/environments/environment.ts b/src/environments/environment.ts
+new file mode 100644
+index 0000000..52476f4
+--- /dev/null
++++ b/src/environments/environment.ts
+@@ -0,0 +1,5 @@
++export const environment = {
++  apiUrl: 'http://localhost:7079',
++  geoserverBase: '/geoserver',
++  geoserverWorkspace: 'satmonitor',
++};
+diff --git a/proxy.conf.json b/proxy.conf.json
+new file mode 100644
+index 0000000..08d05ac
+--- /dev/null
++++ b/proxy.conf.json
+@@ -0,0 +1,7 @@
++{
++  "/geoserver": {
++    "target": "http://localhost:8080",
++    "secure": false,
++    "changeOrigin": true
++  }
++}

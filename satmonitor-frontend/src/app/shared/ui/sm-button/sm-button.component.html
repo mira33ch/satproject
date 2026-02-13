@@ -1,0 +1,24 @@
+<button
+  [attr.type]="type"
+  [disabled]="isDisabled"
+  [attr.aria-label]="ariaLabel || label || null"
+  [class]="finalClass"
+  (click)="onClick($event)"
+>
+  <!-- Spinner -->
+  <span
+    *ngIf="loading"
+    class="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
+    aria-hidden="true"
+  ></span>
+
+  <span *ngIf="leftIcon && !loading" class="inline-flex" aria-hidden="true">
+    <i [class]="leftIcon"></i>
+  </span>
+
+  <span>{{ label }}<ng-content></ng-content></span>
+
+  <span *ngIf="rightIcon && !loading" class="inline-flex" aria-hidden="true">
+    <i [class]="rightIcon"></i>
+  </span>
+</button>

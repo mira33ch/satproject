@@ -1,0 +1,414 @@
+<div class="bg-white border border-gray-200 rounded-xl p-5 flex flex-col h-screen">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button class="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700" (click)="back()" title="Retour">
+        ←
+      </button>
+      <div>
+        <div class="text-lg font-semibold text-gray-900">Visualisation satellite interactive</div>
+        <div class="text-xs text-gray-500">Explorez les données de surveillance satellite avec outils avancés</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm flex items-center gap-2"
+        (click)="toggleToolbar()"
+        title="Afficher/masquer les outils"
+      >
+        Outils
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="toolbarVisible" class="mt-3 pb-3 border-b border-gray-200">
+    <app-map-toolbar
+      [activeTool]="activeTool"
+      (toolChanged)="onToolChanged($event)"
+    ></app-map-toolbar>
+  </div>
+
+  <div class="mt-5 flex-1 grid gap-5" [ngClass]="rightPanelVisible ? 'grid-cols-4' : 'grid-cols-1'">
+    <div [ngClass]="rightPanelVisible ? 'col-span-3' : 'col-span-1'">
+      <app-sat-map #mapComponent></app-sat-map>
+    </div>
+
+    <div *ngIf="rightPanelVisible" class="bg-gray-50 border border-gray-200 rounded-lg overflow-y-auto flex flex-col">
+      <div *ngIf="activeTool === 'search-data'" class="p-4 border-b border-gray-200 flex-1 overflow-y-auto">
+        <div class="text-sm font-semibold text-gray-900 mb-4">Lancer un traitement</div>
+
+        <div *ngIf="phenomenaLoadError" class="mb-4 text-xs text-red-700 p-2 bg-red-50 rounded border border-red-200">
+          {{ phenomenaLoadError }}
+        </div>
+
+        <div *ngIf="catalogWarnings.length" class="mb-4 text-xs text-amber-800 p-2 bg-amber-50 rounded border border-amber-200">
+          <div class="font-semibold">Avertissements catalogue</div>
+          <ul class="list-disc pl-4 mt-1">
+            <li *ngFor="let warning of catalogWarnings">{{ warning }}</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-gray-700 mb-2 block">Phénomène</label>
+          <select
+            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs bg-white disabled:bg-gray-100"
+            [(ngModel)]="selectedPhenomenonId"
+            (change)="onPhenomenonChange()"
+            [disabled]="isLoadingPhenomena || availablePhenomena.length === 0"
+          >
+            <option *ngFor="let p of availablePhenomena" [value]="p.id">
+              {{ p.name }} ({{ p.id }})
+            </option>
+          </select>
+          <div class="mt-2 text-xs text-gray-600 p-2 bg-blue-50 rounded">
+            Exécute la chaîne acquisition → preprocess → indices → change → validation → publish_pack.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-gray-700 mb-2 block">Dates cibles</label>
+          <div class="space-y-2">
+            <div>
+              <label class="text-xs text-gray-600">Date 1</label>
+              <input
+                type="date"
+                class="w-full px-3 py-1 rounded-lg border border-gray-200 text-xs"
+                [(ngModel)]="dateRange.start"
+              />
+            </div>
+            <div>
+              <label class="text-xs text-gray-600">Date 2</label>
+              <input
+                type="date"
+                class="w-full px-3 py-1 rounded-lg border border-gray-200 text-xs"
+                [(ngModel)]="dateRange.end"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs font-semibold text-gray-700 mb-2 block">Zone d'analyse (AOI)</label>
+          <div class="space-y-2 text-xs text-gray-700">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="aoiMode" value="viewport" [(ngModel)]="aoiMode" />
+              <span>Utiliser l'étendue de la carte</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="aoiMode" value="drawn" [(ngModel)]="aoiMode" />
+              <span>Dessiner une zone</span>
+            </label>
+          </div>
+
+          <div *ngIf="aoiMode === 'drawn'" class="mt-2 space-y-2">
+            <button
+              type="button"
+              class="w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700 font-medium"
+              (click)="startDrawAoi()"
+            >
+              Dessiner l'AOI
+            </button>
+            <button
+              type="button"
+              class="w-full px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700 font-medium disabled:bg-gray-100"
+              (click)="clearDrawnAoi()"
+              [disabled]="!drawnAoiGeoJson"
+            >
+              Effacer l'AOI
+            </button>
+            <div *ngIf="drawnAoiGeoJson" class="text-xs text-gray-600 p-2 bg-green-50 rounded border border-green-200">
+              AOI dessinée: {{ drawnAoiGeoJson.type }}
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="w-full px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 disabled:bg-gray-300"
+          (click)="runPipeline()"
+          [disabled]="isRunning || isLoadingPhenomena || availablePhenomena.length === 0"
+        >
+          {{ isRunning ? 'Traitement en cours...' : 'Lancer le traitement' }}
+        </button>
+
+        <div *ngIf="lastRunError" class="mt-3 text-xs text-red-700 p-2 bg-red-50 rounded border border-red-200">
+          {{ lastRunError }}
+        </div>
+
+        <div *ngIf="pipelineContext" class="mt-4 space-y-3">
+          <div class="p-3 bg-white rounded-lg border border-gray-200 text-xs space-y-2">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="font-semibold text-gray-900">Exécution {{ pipelineContext.run_id }}</div>
+                <div class="text-gray-600 mt-1">Statut: {{ formatRunStatus(pipelineContext.status) }}</div>
+              </div>
+              <div class="text-right text-gray-500">
+                <div>Capteur: {{ pipelineContext.sensor }}</div>
+                <div>Phénomène: {{ pipelineContext.phenomenon }}</div>
+              </div>
+            </div>
+            <div class="text-gray-600">
+              <span class="font-medium">Indicateurs:</span>
+              <span *ngIf="pipelineContext.indicators?.length; else noInds">{{ pipelineContext.indicators.join(', ') }}</span>
+              <ng-template #noInds>—</ng-template>
+            </div>
+            <div *ngIf="warningsSummary.length" class="text-yellow-700 p-2 bg-yellow-50 rounded border border-yellow-200">
+              <div class="font-semibold">Avertissements</div>
+              <ul class="list-disc pl-4">
+                <li *ngFor="let w of warningsSummary">
+                  <span>{{ w.text }}</span>
+                  <span *ngIf="w.count > 1" class="text-yellow-900 font-medium"> (x{{ w.count }})</span>
+                </li>
+              </ul>
+            </div>
+            <div *ngIf="errorsSummary.length" class="text-red-700 p-2 bg-red-50 rounded border border-red-200">
+              <div class="font-semibold">Erreurs</div>
+              <ul class="list-disc pl-4">
+                <li *ngFor="let e of errorsSummary">
+                  <span>{{ e.text }}</span>
+                  <span *ngIf="e.count > 1" class="text-red-900 font-medium"> (x{{ e.count }})</span>
+                </li>
+              </ul>
+            </div>
+            <div *ngIf="failedStepDetail?.responseExcerpt" class="text-gray-800 p-2 bg-gray-50 rounded border border-gray-200">
+              <div class="font-semibold">Détail erreur ({{ formatStepName(failedStepDetail?.step) }})</div>
+              <div *ngIf="failedStepDetail?.statusCode" class="text-xs text-gray-500">HTTP {{ failedStepDetail?.statusCode }}</div>
+              <pre class="mt-2 text-xs font-mono whitespace-pre-wrap break-words">{{ failedStepDetail?.responseExcerpt }}</pre>
+            </div>
+          </div>
+
+          <div class="p-3 bg-white rounded-lg border border-gray-200 text-xs">
+            <div class="font-semibold text-gray-900 mb-2">Statut des étapes</div>
+            <div class="space-y-1">
+              <div *ngFor="let kv of pipelineContext.step_status | keyvalue" class="flex justify-between">
+                <span class="text-gray-700">{{ formatStepName(kv.key) }}</span>
+                <span class="font-medium text-gray-900">{{ formatStepState(kv.value) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTool === 'layer-management'" class="p-4 flex-1 overflow-y-auto">
+        <div class="text-sm font-semibold text-gray-900 mb-4">Gérer les couches GeoServer</div>
+
+        <div class="space-y-3">
+          <div class="p-3 bg-white rounded-lg border border-gray-200">
+            <label class="flex items-center gap-2 text-sm mb-3">
+              <input type="checkbox" [(ngModel)]="wmsVisible" (change)="onWmsToggle()" />
+              <span class="font-medium text-gray-700">Afficher la couche</span>
+            </label>
+
+            <div *ngIf="wmsVisible" class="space-y-2">
+              <div>
+                <label class="text-xs text-gray-600 block mb-1">Couche à afficher</label>
+                <select
+                  class="w-full px-2 py-1 rounded border border-gray-200 text-xs bg-white"
+                  [(ngModel)]="selectedLayerId"
+                  (change)="onLayerChange()"
+                >
+                  <option *ngFor="let layer of availableLayers" [value]="layer.id">
+                    {{ layer.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-xs text-gray-600 block mb-1">Opacité: {{ wmsOpacity | number: '1.2-2' }}</label>
+                <input
+                  type="range"
+                  min="0.6"
+                  max="0.9"
+                  step="0.05"
+                  class="w-full"
+                  [(ngModel)]="wmsOpacity"
+                  (input)="onOpacityChange()"
+                />
+              </div>
+
+              <button
+                type="button"
+                class="w-full px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50 text-xs text-gray-700 font-medium"
+                (click)="zoomToLayer()"
+              >
+                Zoomer sur les données
+              </button>
+
+              <div class="text-xs text-gray-600 p-2 bg-blue-50 rounded">
+                Cliquez sur la carte pour afficher la valeur du pixel
+              </div>
+
+              <div *ngIf="lastFeatureInfo" class="text-xs text-gray-700 p-2 bg-yellow-50 rounded border border-yellow-200">
+                <div class="font-semibold">Valeur au clic</div>
+                <div class="font-mono break-all">{{ lastFeatureInfo }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="wmsVisible" class="p-3 bg-white rounded-lg border border-gray-200 text-xs space-y-2">
+            <div class="font-semibold text-gray-900">{{ selectedIndicatorInfo.name }}</div>
+            <div class="text-gray-600">{{ selectedIndicatorInfo.measure }}</div>
+            <div class="text-gray-600">
+              <span class="font-medium">Plage typique:</span> {{ selectedIndicatorInfo.typicalRange }}
+            </div>
+            <div *ngIf="selectedIndicatorInfo.quickRead?.length">
+              <div class="font-semibold text-gray-700 mb-1">Lecture rapide</div>
+              <ul class="list-disc pl-4 text-gray-600 space-y-0.5">
+                <li *ngFor="let line of selectedIndicatorInfo.quickRead">{{ line }}</li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="wmsVisible" class="p-3 bg-white rounded-lg border border-gray-200">
+            <div class="font-semibold text-gray-900 text-xs mb-2">Périodes</div>
+            <div class="text-xs text-gray-600 space-y-1">
+              <div class="flex justify-between">
+                <span>Date 1:</span>
+                <span class="text-gray-900 font-medium">{{ dateLabels.date1Label }}</span>
+              </div>
+              <div *ngIf="dateLabels.date2Label" class="flex justify-between">
+                <span>Date 2:</span>
+                <span class="text-gray-900 font-medium">{{ dateLabels.date2Label }}</span>
+              </div>
+              <div *ngIf="dateLabels.metadataStatus === 'missing'" class="mt-2 rounded border border-amber-200 bg-amber-50 p-2 text-amber-800">
+                <div class="font-semibold">Unknown date</div>
+                <div>{{ dateLabels.warning || 'Temporal metadata is missing for this run.' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-white rounded-lg border border-gray-200">
+            <label class="flex items-center gap-2 text-sm mb-3">
+              <input type="checkbox" [(ngModel)]="compareEnabled" (change)="onCompareToggle()" [disabled]="compareOptions.length === 0" />
+              <span class="font-medium text-gray-700">Comparer (date 1 ↔ date 2)</span>
+            </label>
+
+            <div *ngIf="compareEnabled" class="mt-2">
+              <label class="text-xs text-gray-600 block mb-1">Produit à comparer</label>
+              <select
+                class="w-full px-2 py-1 rounded border border-gray-200 text-xs bg-white"
+                [(ngModel)]="compareIndex"
+                (change)="onCompareIndexChange()"
+              >
+                <option *ngFor="let option of compareOptions" [value]="option.id">{{ option.label }}</option>
+              </select>
+              <div class="text-xs text-gray-600 p-2 mt-2 bg-blue-50 rounded">
+                Glissez le divider au centre de la carte pour comparer les deux dates
+              </div>
+            </div>
+            <div *ngIf="!compareOptions.length" class="text-xs text-gray-500 p-2 bg-gray-50 rounded">
+              Aucun produit compare-capable disponible.
+            </div>
+          </div>
+
+          <div *ngIf="wmsVisible && (legendMetadata || legendUrl)" class="p-3 bg-white rounded-lg border border-gray-200">
+            <button
+              type="button"
+              class="w-full text-left font-medium text-xs text-gray-900 flex justify-between items-center hover:text-blue-600"
+              (click)="toggleLegend()"
+            >
+              <span>Légende</span>
+              <span class="text-xs">{{ legendExpanded ? '▼' : '▶' }}</span>
+            </button>
+            <div *ngIf="legendExpanded" class="mt-2 border border-gray-200 rounded p-2 bg-gray-50 text-xs">
+              <div *ngIf="legendMetadata?.type === 'continuous'" class="text-gray-700">
+                <div><span class="font-semibold">Type:</span> Continue</div>
+                <div><span class="font-semibold">Min:</span> {{ legendMetadata?.min ?? '—' }}</div>
+                <div><span class="font-semibold">Max:</span> {{ legendMetadata?.max ?? '—' }}</div>
+              </div>
+              <div *ngIf="legendMetadata?.type === 'categorical'" class="text-gray-700">
+                <div class="font-semibold mb-1">Classes</div>
+                <div *ngFor="let c of legendMetadata?.classes" class="flex items-center justify-between gap-2 py-0.5">
+                  <span>{{ c.label }}</span>
+                  <span class="font-mono text-gray-500">{{ c.value }}</span>
+                </div>
+              </div>
+              <div *ngIf="legendUrl" class="mt-2">
+                <img [src]="legendUrl" class="max-h-32 w-auto max-w-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTool === 'export-data'" class="p-4 flex-1 overflow-y-auto">
+        <div class="text-sm font-semibold text-gray-900 mb-4">Exporter les données</div>
+
+        <div class="space-y-3">
+          <div class="p-3 bg-white rounded-lg border border-gray-200">
+            <div class="font-medium text-xs text-gray-900 mb-3">Carte actuelle</div>
+            <div class="space-y-2">
+              <button
+                type="button"
+                class="w-full px-3 py-2 rounded-lg bg-green-500 text-white text-xs font-medium hover:bg-green-600"
+                (click)="exportMapImage('png')"
+                title="Exporte la vue cartographique en image PNG"
+              >
+                PNG
+              </button>
+              <button
+                type="button"
+                class="w-full px-3 py-2 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700"
+                (click)="exportMapImage('tiff')"
+                title="Exporte la vue cartographique en image TIFF"
+              >
+                TIFF
+              </button>
+              <button
+                type="button"
+                class="w-full px-3 py-2 rounded-lg bg-green-700 text-white text-xs font-medium hover:bg-green-800"
+                (click)="exportMapAsGeoJSON()"
+                title="Exporte la vue cartographique en format GeoJSON"
+              >
+                GeoJSON
+              </button>
+            </div>
+            <div class="mt-2 text-xs text-gray-600">Formats d'export raster et vectoriel</div>
+          </div>
+
+          <div class="p-3 bg-white rounded-lg border border-gray-200">
+            <div class="font-medium text-xs text-gray-900 mb-3">Traitement</div>
+            <div class="text-xs text-gray-600 mb-3">
+              <div *ngIf="pipelineContext; else noRun">
+                Dernière exécution: <span class="font-mono text-gray-900">{{ pipelineContext.run_id }}</span>
+              </div>
+              <ng-template #noRun>Aucune exécution disponible</ng-template>
+            </div>
+            <div class="space-y-2">
+              <button
+                type="button"
+                class="w-full px-3 py-2 rounded-lg bg-purple-500 text-white text-xs font-medium hover:bg-purple-600 disabled:bg-gray-300"
+                (click)="exportPipelineContext()"
+                [disabled]="!pipelineContext"
+              >
+                Contexte pipeline (JSON)
+              </button>
+              <button
+                type="button"
+                class="w-full px-3 py-2 rounded-lg bg-purple-600 text-white text-xs font-medium hover:bg-purple-700"
+                (click)="exportAoiGeoJson()"
+              >
+                AOI (GeoJSON)
+              </button>
+            </div>
+          </div>
+
+          <div class="p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs text-gray-700 space-y-2">
+            <div class="font-medium text-blue-900">Formats d'export disponibles</div>
+            <div class="space-y-1">
+              <div><span class="font-semibold">PNG</span>: Image raster compressée (web)</div>
+              <div><span class="font-semibold">TIFF</span>: Image raster haute qualité (analyse)</div>
+              <div><span class="font-semibold">GeoJSON</span>: Format géospatial vectoriel (SIG)</div>
+              <div><span class="font-semibold">JSON</span>: Format textuel (métadonnées)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTool === 'none'" class="p-4 flex items-center justify-center h-full text-gray-500 text-sm">
+        Sélectionnez un outil pour commencer
+      </div>
+    </div>
+  </div>
+</div>

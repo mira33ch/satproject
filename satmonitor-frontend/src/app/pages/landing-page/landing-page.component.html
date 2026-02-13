@@ -1,0 +1,57 @@
+<div class="w-full min-h-screen relative overflow-hidden">
+    <!-- background -->
+    <div class="absolute inset-0">
+        <img src="assets/satLanding.png" class="w-full h-full object-cover" alt="Background" />
+        <!-- voile blanc + fondu -->
+        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-white/10"></div>
+    </div>
+
+    <!-- content -->
+    <div class="relative z-10 w-full min-h-screen flex flex-col">
+        <!-- Navbar wrapper -->
+        <div class="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6">
+            <div class="rounded-xl shadow-lg bg-white/95 backdrop-blur border border-gray-200">
+                <app-navbar (openLogin)="showLogin = true" (openRegister)="showRegister = true"></app-navbar>
+            </div>
+        </div>
+
+        <!-- Hero -->
+        <div class="flex-1 flex items-start">
+            <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+                <div class="pt-10 sm:pt-16 lg:pt-24 lg:ml-10">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl leading-[1.15] font-extrabold text-gray-700 max-w-4xl">
+                        {{ 'LANDING.TITLE' | translate }}
+                    </h1>
+
+                    <p class="text-sm sm:text-base text-gray-700 mt-4 sm:mt-5 max-w-xl">
+                        {{ 'LANDING.SUBTITLE' | translate }}
+                    </p>
+
+                    <div class="mt-6 sm:mt-8">
+                        <sm-button variant="primary" size="md" [label]="'LANDING.CTA' | translate"
+                            (clicked)="onLearnMore()"></sm-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <sm-modal *ngIf="showLogin" size="lg" [hideHeader]="true" [backdropClass]="'bg-gray-900/60'"
+            (close)="showLogin = false">
+            <app-login-popup (close)="showLogin = false" (openRegister)="showLogin = false; showRegister = true"
+                (openForgot)="openForgot()"></app-login-popup>
+        </sm-modal>
+
+        <sm-modal *ngIf="showRegister" size="lg" [hideHeader]="true" [backdropClass]="'bg-gray-900/60'"
+            (close)="showRegister = false">
+            <app-register-popup (close)="showRegister = false"
+                (openLogin)="showRegister = false; showLogin = true"></app-register-popup>
+        </sm-modal>
+
+        <sm-modal *ngIf="showForgot" size="lg" [hideHeader]="true" [backdropClass]="'bg-gray-900/60'"
+            (close)="showForgot = false">
+            <app-forgot-password-popup (close)="showForgot = false"
+                (submitEmail)="onForgotSubmit($event)"></app-forgot-password-popup>
+        </sm-modal>
+    </div>
+</div>

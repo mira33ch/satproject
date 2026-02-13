@@ -1,0 +1,19 @@
+<div class="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4">
+  <div class="w-12 h-12 rounded-xl flex items-center justify-center border border-gray-200" [ngClass]="item.iconBgClass">
+    <img [src]="item.icon" class="w-6 h-6" alt="icon" />
+  </div>
+
+  <div class="flex-1">
+    <div class="text-sm font-semibold text-gray-900">{{ item.title }}</div>
+    <div class="text-sm text-gray-700">{{ item.value }}</div>
+  </div>
+
+  <div *ngIf="item.metaLeftLabel || item.metaRightLabel" class="flex gap-6 text-sm text-gray-700">
+    <div *ngIf="item.metaLeftLabel">
+      <div class="font-semibold">{{ item.metaLeftLabel }}: {{ item.metaLeftValue }}</div>
+    </div>
+    <div *ngIf="item.metaRightLabel">
+      <div class="font-semibold">{{ item.metaRightLabel }}: {{ item.metaRightValue }}</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="bg-white border border-gray-200 rounded-xl p-5">
+  <div class="flex items-center gap-3">
+    <button class="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50" (click)="back()">←</button>
+    <div class="text-lg font-semibold text-gray-900">Liste des indicateurs</div>
+  </div>
+
+  <div class="mt-4 flex items-center justify-between gap-4 flex-wrap">
+    <div class="inline-flex bg-gray-100 rounded-xl p-1">
+      <button type="button"
+              class="px-4 py-2 rounded-lg text-sm font-semibold"
+              [ngClass]="tab==='general' ? 'bg-green-700 text-white' : 'text-gray-700'"
+              (click)="setTab('general')">
+        Généraux
+      </button>
+      <button type="button"
+              class="px-4 py-2 rounded-lg text-sm font-semibold"
+              [ngClass]="tab==='custom' ? 'bg-green-700 text-white' : 'text-gray-700'"
+              (click)="setTab('custom')">
+        Personnalisés
+      </button>
+    </div>
+
+    <div class="flex-1 min-w-[260px]">
+      <input class="w-full h-12 px-4 rounded-xl border border-gray-200 outline-none"
+             placeholder="Rechercher un indicateur"
+             [formControl]="qCtrl"
+             (keyup.enter)="search()" />
+    </div>
+
+    <button class="h-12 px-5 rounded-xl bg-green-700 text-white font-semibold hover:bg-green-800">
+      + Ajouter un indicateur
+    </button>
+  </div>
+
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <app-indicator-card *ngFor="let it of items" [item]="it"></app-indicator-card>
+  </div>
+
+  <!-- Pagination -->
+  <div class="mt-8 flex items-center justify-center gap-2 text-sm">
+    <button class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50"
+            (click)="goPage(page-1)">‹</button>
+
+    <button *ngFor="let p of pages"
+            class="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50"
+            [ngClass]="p===page ? 'bg-gray-100 font-semibold' : ''"
+            (click)="goPage(p)">
+      {{ p }}
+    </button>
+
+    <button class="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50"
+            (click)="goPage(page+1)">›</button>
+  </div>
+</div>

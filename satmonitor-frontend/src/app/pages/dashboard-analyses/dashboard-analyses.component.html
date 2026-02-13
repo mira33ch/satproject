@@ -1,0 +1,75 @@
+<div class="w-full">
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-3">
+    <button class="w-10 h-10 rounded-lg border border-green-700/40 hover:bg-gray-50" (click)="back()">←</button>
+    <div class="text-xl font-semibold text-gray-900">Analyses temporaires</div>
+  </div>
+
+  <!-- Selector (chips) -->
+<div class="w-full overflow-x-auto pb-4">
+  <div class="flex gap-6 min-w-max">
+    <button
+      *ngFor="let a of analyses"
+      type="button"
+      (click)="select(a.id)"
+      class="h-[68px] min-w-[320px] px-6 rounded-2xl border bg-white flex items-center justify-between
+             transition hover:shadow-sm"
+      [ngClass]="a.id === selectedId ? 'border-green-700 ring-1 ring-green-700/20' : 'border-gray-300'"
+    >
+      <div class="flex items-center gap-4">
+        <!-- Icon container like the mock -->
+        <div
+          class="w-12 h-12 rounded-xl flex items-center justify-center border"
+          [ngClass]="a.colorClassBorder"
+        >
+          <img [src]="a.icon" class="w-6 h-6" alt="" />
+        </div>
+
+        <div class="text-left leading-tight">
+          <div class="text-lg font-semibold text-gray-900">{{ a.label }}</div>
+          <div class="text-sm text-gray-700">{{ a.value }}</div>
+        </div>
+      </div>
+
+      <!-- Optional: small divider/extra info on right (if needed later) -->
+      <!-- <div *ngIf="a.right" class="text-right text-sm text-gray-700">
+        <div class="font-semibold">{{ a.right.title }}</div>
+        <div>{{ a.right.value }}</div>
+      </div> -->
+    </button>
+  </div>
+</div>
+
+
+  <!-- Grid -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Left: chart card -->
+    <div class="xl:col-span-2 bg-white border border-green-700/20 rounded-2xl p-5">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="text-sm text-gray-700">{{ current.title }}</div>
+          <div class="mt-2 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center">
+              <img [src]="current.icon" class="w-6 h-6" alt="" />
+            </div>
+            <div class="text-lg font-semibold text-gray-900">{{ current.label }}</div>
+          </div>
+        </div>
+
+        <button class="w-12 h-12 rounded-xl bg-green-700 text-white flex items-center justify-center shadow">
+          <span class="text-xl leading-none">≡</span>
+        </button>
+      </div>
+
+      <div class="mt-6">
+        <app-analysis-area-chart [series]="current.series"></app-analysis-area-chart>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div class="space-y-6">
+      <app-analysis-stats-table [rows]="current.rows"></app-analysis-stats-table>
+      <app-analysis-parameters [model]="current"></app-analysis-parameters>
+    </div>
+  </div>
+</div>

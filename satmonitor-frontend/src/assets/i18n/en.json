@@ -1,0 +1,167 @@
+{
+  "COMMON": {
+    "CLOSE": "Close",
+    "OR": "Or",
+    "CANCEL": "Cancel",
+    "SUBMIT": "Submit",
+    "REQUIRED": "This field is required.",
+    "NEXT": "Suivant",
+    "PREVIOUS": "Précédent"
+  },
+  "NAVBAR": {
+    "TAGLINE": "Global Phenomena Tracking"
+  },
+  "HOME": {
+    "TITLE": "Your satellite imagery indicator monitoring application",
+    "SUBTITLE": "A single interface that gives easy access to relevant satellite data for natural risk monitoring.",
+    "CTA": "Learn more about the application"
+  },
+  "AUTH": {
+    "LOGIN": "Sign in",
+    "SIGNUP": "Sign up",
+    "SIGNUP_TITLE_UPPER": "SIGN UP",
+    "LOGIN_TITLE_UPPER": "SIGN IN",
+    "EMAIL_LABEL": "Email",
+    "EMAIL_PLACEHOLDER": "Enter your email address",
+    "PASSWORD_LABEL": "Password",
+    "PASSWORD_PLACEHOLDER": "Enter your password",
+    "REMEMBER_ME": "Remember me",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "NO_ACCOUNT": "Don't have an account?",
+    "SOCIAL": {
+      "GOOGLE": "Sign in with Google",
+      "FACEBOOK": "Sign in with Facebook",
+      "APPLE": "Sign in with Apple"
+    },
+    "CONFIRM_EMAIL": {
+      "TITLE": "Email validation",
+      "SUBTITLE": "Confirm the validity of this email address",
+      "VALIDATE": "Validate",
+      "EMAIL_FALLBACK": "Email address",
+      "SUCCESS": "Email address successfully validated.",
+      "ERROR_TOKEN_MISSING": "Invalid or expired link (missing token)."
+    }
+  },
+  "CONFIRM_EMAIL": {
+    "TITLE": "Email validation",
+    "SUBTITLE": "Confirm the validity of this email address",
+    "VALIDATE": "Validate",
+    "EMAIL_FALLBACK": "Email address",
+    "SUCCESS": "Email address successfully validated.",
+    "ERROR_TOKEN_MISSING": "Invalid or expired link (missing token)."
+  },
+  "LANDING": {
+    "TITLE": "Your satellite imagery indicator monitoring application",
+    "SUBTITLE": "A single interface that provides easy access to relevant satellite data for natural risk monitoring.",
+    "CTA": "Learn more about the application"
+  },
+  "REGISTER": {
+    "STEP1": {
+      "TITLE": "Company",
+      "COMPANY_NAME_LABEL": "Company name",
+      "COMPANY_NAME_PLACEHOLDER": "Enter the company name",
+      "COMPANY_COUNTRY_LABEL": "Company country",
+      "COMPANY_COUNTRY_PLACEHOLDER": "Enter the company country",
+      "COMPANY_ADDRESS_LABEL": "Company address",
+      "COMPANY_ADDRESS_PLACEHOLDER": "Enter the company address",
+      "COMPANY_PHONE_LABEL": "Phone number", 
+      "COMPANY_PHONE_PLACEHOLDER": "Enter the company phone number",
+      "INVALID_PHONE": "Invalid phone number format"  
+    },
+    "STEP2": {
+      "TITLE": "Account",
+      "USERNAME_LABEL": "Username",
+      "USERNAME_PLACEHOLDER": "Enter a username",
+      "PHONE_LABEL": "Phone number",
+      "PHONE_PLACEHOLDER": "Enter a phone number",
+      "INVALID_PHONE": "Invalid phone number format",  
+      "EMAIL_LABEL": "Email",
+      "EMAIL_PLACEHOLDER": "Enter an email address",
+      "PASSWORD_LABEL": "Password",
+      "PASSWORD_PLACEHOLDER": "Enter a password",
+      "CONFIRM_PASSWORD_LABEL": "Confirm password",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Re-enter the password",
+      "PASSWORD_MISMATCH": "Passwords do not match."
+    }
+  },
+  "REPORTS": {
+    "TITLE": "Reports & Exports",
+    "FORM": {
+      "TYPE": "Report type",
+      "MONTHLY": "Monthly summary",
+      "WEEKLY": "Weekly summary",
+      "CARTOGRAPHY": "Cartography",
+      "STATS": "Statistics",
+      "RAW": "Raw data",
+      "RECO": "Recommendations",
+      "EXPORT_PARAMS": "Export parameters",
+      "FORMAT": "Format",
+      "RAW_DATA": "Raw data",
+      "RESOLUTION": "Resolution",
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "PERIOD": "Period",
+      "ZONE": "Zone",
+      "CHOOSE_ZONE": "Choose a zone",
+      "PHENOMENON": "Phenomenon",
+      "GENERATE": "Generate"
+    },
+    "LIST": {
+      "TITLE": "Reports list",
+      "SEARCH": "Search"
+    },
+    "MENU": {
+      "RAW": "Raw data",
+      "DELETE": "Delete"
+    }
+  },
+   "USERS": {
+    "TITLE": "User management",
+    "SEARCH_PLACEHOLDER": "Search a user",
+    "ADD": "Add",
+    "ADD_TITLE": "Add a user",
+    "ADD_BTN": "Add",
+
+    "COL_LASTNAME": "Last name",
+    "COL_FIRSTNAME": "First name",
+    "COL_ROLE": "Role",
+    "TOGGLE": "Enable / disable",
+
+    "LASTNAME_LABEL": "Last name",
+    "LASTNAME_PLACEHOLDER": "Enter a last name",
+    "FIRSTNAME_LABEL": "First name",
+    "FIRSTNAME_PLACEHOLDER": "Enter a first name",
+    "ROLE_LABEL": "Role",
+    "ROLE_PLACEHOLDER": "Select",
+
+    "KPI_TASKS": "Running tasks",
+    "KPI_CPU": "CPU",
+    "KPI_STORAGE": "Storage",
+    "KPI_RAM": "RAM",
+    "KPI_NETWORK": "Network",
+    "KPI_API": "API",
+
+    "ROLES": {
+      "ADMIN": "Administrator",
+      "DEV": "Developer",
+      "DESIGNER": "Designer",
+      "PM": "Project Manager",
+      "ANALYST": "Analyst",
+      "HR": "Human Resources"
+    }
+  },
+  "ERRORS": {
+  "REGISTER": {
+    "USERNAME_EXISTS": "This username is already taken",
+    "EMAIL_EXISTS": "This email address is already in use",
+    "PHONE_EXISTS": "This phone number is already in use",
+    "NAME_EXISTS": "This company name is already in use"
+  },
+  "AUTH": {
+    "EMAIL_NOT_VERIFIED": "Please verify your email address before signing in",
+    "INVALID_CREDENTIALS": "Invalid email or password",
+    "USER_NOT_FOUND": "User not found"
+  }
+}
+}

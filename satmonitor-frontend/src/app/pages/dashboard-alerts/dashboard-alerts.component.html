@@ -1,0 +1,152 @@
+<div class="w-full h-full ">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-4">
+        <button class="w-10 h-10 rounded-lg border border-green-700/40 hover:bg-gray-50" (click)="back()">
+            ←
+        </button>
+        <div class="text-xl font-semibold text-gray-900">Liste des alertes</div>
+    </div>
+
+    <!-- KPI strip -->
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div *ngFor="let k of kpis; let i = index" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
+                    <img [src]="k.icon" class="w-5 h-5" alt="">
+                </div>
+
+                <div class="leading-tight">
+                    <div class="text-sm text-gray-500">{{ k.label }}</div>
+                    <div class="text-xl font-semibold text-gray-900 mt-1">{{ k.value }}</div>
+                </div>
+
+                <!-- separators on md+ -->
+                <div class="hidden md:block ml-auto h-10 w-px bg-gray-200" *ngIf="i < (kpis.length - 1)"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search + actions -->
+    <div class="mt-4 flex items-center gap-3">
+        <div class="flex-1">
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"> <img src="assets/icons/search.svg" class="w-5 h-5" alt=""></span>
+                <input class="w-full h-12 pl-11 pr-4 rounded-xl border border-gray-200 outline-none"
+                    placeholder="Rechercher une alerte" [value]="q" (ngModelChange)="onSearchChange()">
+            </div>
+        </div>
+
+        <!-- action buttons group -->
+        <div class="h-12 px-3 rounded-xl bg-green-800 text-white flex items-center gap-3">
+            <button class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                (click)="actionFilter()" title="Filtrer">
+                <img src="assets/icons/alerts/filter.svg" class="w-5 h-5" alt="">
+            </button>
+
+            <button class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                (click)="actionExport()" title="Exporter">
+                <img src="assets/icons/alerts/export.svg" class="w-5 h-5" alt="">
+            </button>
+
+            <button class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                (click)="actionMail()" title="Email">
+                <img src="assets/icons/alerts/mail.svg" class="w-5 h-5" alt="">
+            </button>
+
+            <button class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                (click)="actionEdit()" title="Éditer">
+                <img src="assets/icons/alerts/edit.svg" class="w-5 h-5" alt="">
+            </button>
+        </div>
+
+        
+        <div  class="h-12 px-3 rounded-xl bg-green-800 text-white flex items-center gap-3">
+             <button class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center"
+                (click)="actionAdd()" title="Ajouter">
+                <img src="assets/icons/alerts/add.svg" class="w-5 h-5" alt="">
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="mt-4 bg-white border border-gray-200  rounded-2xl overflow-auto h-2/3 overflow-hidden ">
+        <!-- header row -->
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 text-sm text-gray-500">
+            <div class="col-span-1 flex items-center">
+                <input type="checkbox" class="w-5 h-5" [checked]="allSelected" (change)="toggleAllFromEvent($event)">
+            </div>
+            <div class="col-span-3">Phenomene</div>
+            <div class="col-span-1">Date</div>
+            <div class="col-span-1">Heure</div>
+            <div class="col-span-2">Localisation</div>
+            <div class="col-span-2 text-center">Niveau</div>
+            <div class="col-span-2 text-center">Statut</div>
+        </div>
+
+        <!-- rows -->
+        <div *ngFor="let r of paged" class="grid grid-cols-12 gap-4 px-6 py-4 border-t border-gray-100 items-center">
+            <div class="col-span-1">
+                <input type="checkbox" class="w-5 h-5" [checked]="!!r.selected" (change)="setRowSelected(r, $event)">
+            </div>
+
+            <div class="col-span-3 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl border bg-white flex items-center justify-center"
+                    [ngClass]="r.iconBorderClass">
+                    <img [src]="r.icon" class="w-5 h-5" alt="">
+                </div>
+
+                <div>
+                    <div class="font-semibold text-gray-900">{{ r.phenomenon }}</div>
+                    <div class="text-xs text-gray-400 mt-1">
+                        <span>{{ r.kpiLine1 }}</span>
+                        <span class="ml-4">{{ r.kpiLine2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-1 text-sm text-gray-900">{{ r.date }}</div>
+            <div class="col-span-1 text-sm text-gray-900">{{ r.time }}</div>
+            <div class="col-span-2 text-sm text-gray-900">{{ r.location }}</div>
+
+            <div class="col-span-2 flex justify-center">
+                <span class="px-4 py-1 rounded-md text-xs font-semibold" [ngClass]="levelBadgeClass(r.level)">
+                    {{ r.level }}
+                </span>
+            </div>
+
+            <div class="col-span-2 flex justify-center">
+                <span class="text-sm font-semibold" [ngClass]="statusClass(r.status)">
+                    {{ r.status }}
+                </span>
+            </div>
+        </div>
+
+      
+    </div>
+      <!-- Pagination -->
+        <div class="px-6 py-3 border-t border-gray-100 flex items-center justify-center gap-2 text-sm text-gray-700">
+            <button class="w-10 h-10 rounded-lg hover:bg-gray-50 border border-gray-200" (click)="goPage(page-1)">
+                ‹
+            </button>
+
+            <button *ngFor="let _ of [].constructor(pagesCount); let i = index"
+                class="w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50"
+                [ngClass]="(i+1)===page ? 'bg-gray-100 font-semibold' : ''" (click)="goPage(i+1)">
+                {{ i+1 }}
+            </button>
+
+            <button class="w-10 h-10 rounded-lg hover:bg-gray-50 border border-gray-200" (click)="goPage(page+1)">
+                ›
+            </button>
+        </div>
+
+
+<sm-modal *ngIf="addAlert" size="lg" [hideHeader]="true" [backdropClass]="'bg-gray-900/60'"
+  (close)="addAlert = false">
+  <app-add-alert-popup
+    (close)="addAlert = false"
+    (submitAlert)="onAlertCreated($event)">
+  </app-add-alert-popup>
+</sm-modal>
+
+</div>

@@ -1,0 +1,41 @@
+<div class="w-full min-h-screen relative overflow-hidden">
+  <!-- background (même que landing) -->
+  <div class="absolute inset-0">
+    <img src="assets/satLanding.png" class="w-full h-full object-cover" alt="Background" />
+    <div class="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-white/10"></div>
+  </div>
+
+  <!-- content -->
+  <div class="relative z-10 w-full min-h-screen flex flex-col">
+    <!-- Navbar wrapper -->
+    <div class="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6">
+      <div class="rounded-xl shadow-lg bg-white/95 backdrop-blur border border-gray-200">
+        <app-navbar></app-navbar>
+      </div>
+    </div>
+
+    <!-- center card (même cadrage que reset-password) -->
+    <div class="flex-1 flex items-start justify-center">
+      <div class="w-full max-w-4xl px-4 sm:px-6 lg:px-10 pt-10 sm:pt-16">
+        <div class="flex justify-center">
+          <app-confirm-email-card
+            [email]="email"
+            [token]="token"
+            [loading]="loading"
+            (cancelled)="goToLanding()"
+            (validated)="onValidate()"
+          ></app-confirm-email-card>
+        </div>
+
+        <!-- message d'état (même logique que reset-password) -->
+        <div
+          *ngIf="pageMessage"
+          class="mt-4 text-center text-sm"
+          [ngClass]="pageMessageType === 'success' ? 'text-green-700' : 'text-red-600'"
+        >
+          {{ pageMessage | translate }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

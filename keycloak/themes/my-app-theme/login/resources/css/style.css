@@ -1,0 +1,117 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, Arial, sans-serif;
+}
+
+/* Background */
+.kc-login-background {
+    position: fixed;
+    inset: 0;
+    background: url("../img/satLanding.png") center/cover no-repeat;
+}
+
+.kc-login-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to right, #ffffff, rgba(255,255,255,.85), rgba(255,255,255,.2));
+}
+
+/* Center layout */
+.kc-container {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Card */
+.kc-card {
+    width: 520px;
+    max-width: calc(100vw - 2rem);
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 25px 40px rgba(0,0,0,.15);
+    padding: 40px;
+}
+
+/* Title */
+.kc-card h1 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+/* Text */
+.kc-desc {
+    text-align: center;
+    font-size: .85rem;
+    color: #6b7280;
+    margin-top: 10px;
+}
+
+/* Inputs */
+.kc-input {
+    width: 100%;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 0 12px;
+    margin-top: 6px;
+}
+
+.kc-input:focus {
+    outline: none;
+    border-color: #337027;
+    box-shadow: 0 0 0 2px rgba(51,112,39,.15);
+}
+
+/* Button */
+.kc-btn {
+    margin-top: 20px;
+    width: 100%;
+    height: 48px;
+    border-radius: 10px;
+    border: none;
+    background: #337027;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.kc-btn:hover {
+    background: #285a1f;
+}
+
+/* Links */
+.kc-links {
+    margin-top: 30px;
+    border-top: 1px solid #f1f1f1;
+    padding-top: 20px;
+    font-size: .75rem;
+    text-align: center;
+}
+
+.kc-links a {
+    color: #337027;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.kc-links a:hover {
+    text-decoration: underline;
+}
+.kc-container {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start; /* au lieu de center */
+    justify-content: center;
+    padding-top: 80px; /* hauteur de la navbar */
+}
+
+

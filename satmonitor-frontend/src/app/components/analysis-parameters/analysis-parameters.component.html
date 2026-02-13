@@ -1,0 +1,56 @@
+<div class="bg-white border border-green-700/20 rounded-2xl p-5">
+  <div class="text-lg font-semibold text-gray-900">Paramètres d'analyse</div>
+
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+    <label class="flex items-center gap-2">
+      <input
+        type="checkbox"
+        [checked]="model?.params?.autoDetection"
+        (change)="model.params.autoDetection = $any($event.target).checked"
+      />
+      Détection automatique changement
+    </label>
+
+    <label class="flex items-center gap-2">
+      <input
+        type="checkbox"
+        [checked]="model?.params?.customThresholdAlerts"
+        (change)="model.params.customThresholdAlerts = $any($event.target).checked"
+      />
+      Alertes seuils personnalisés
+    </label>
+
+    <label class="flex items-center gap-2 md:col-span-2">
+      <input
+        type="checkbox"
+        [checked]="model?.params?.seasonalTrends"
+        (change)="model.params.seasonalTrends = $any($event.target).checked"
+      />
+      Calcul tendances saisonnières
+    </label>
+  </div>
+
+  <div class="mt-5 bg-gray-100 rounded-2xl p-4">
+    <div class="text-base font-semibold text-gray-900 mb-3">Seuils</div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input
+        class="h-12 px-4 rounded-xl border border-gray-200 outline-none"
+        [value]="'NBR Critique : ' + model.params.nbrCritical"
+        (input)="model.params.nbrCritical = parseNumber($any($event.target).value)"
+      />
+
+      <input
+        class="h-12 px-4 rounded-xl border border-gray-200 outline-none"
+        [value]="'NBR : ' + model.params.nbr"
+        (input)="model.params.nbr = parseNumber($any($event.target).value)"
+      />
+
+      <input
+        class="h-12 px-4 rounded-xl border border-gray-200 outline-none md:col-span-2"
+        [value]="'Surface minimum : ' + model.params.surfaceMin"
+        (input)="model.params.surfaceMin = parseNumber($any($event.target).value)"
+      />
+    </div>
+  </div>
+</div>

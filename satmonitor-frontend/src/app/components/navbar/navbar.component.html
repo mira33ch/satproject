@@ -1,0 +1,70 @@
+<!-- <header class="relative mx-16 rounded-xl shadow-lg bg-white flex justify-between items-center px-6 py-4 z-10">
+
+  <div class="text-[#337027] font-bold text-2xl">SatMonitor</div>
+
+  
+  <div class="space-x-3">
+
+    <button 
+      class="px-4 py-2 border border-[#337027] rounded-lg text-[#337027] hover:bg-[#337027]/10 transition"
+      [routerLink]="['/register']">
+      S'inscrire
+    </button>
+
+   
+    <button 
+      class="px-4 py-2 bg-[#337027] text-white rounded-lg hover:bg-green-800 transition"
+      [routerLink]="['/login']">
+      Se connecter
+    </button>
+  </div>
+</header> -->
+
+<div class="w-full px-4 sm:px-6 py-4">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <!-- Brand -->
+    <div class="flex items-center gap-3">
+      <img src="assets/logo.png" class="h-10 w-10" alt="SatMonitor" />
+      <div class="leading-tight">
+        <div class="font-extrabold tracking-wide text-gray-900 text-base sm:text-lg">
+          SATMONITOR
+        </div>
+        <div class="text-xs text-gray-500">
+          {{ 'NAVBAR.TAGLINE' | translate }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="grid grid-cols-1 sm:flex sm:items-center gap-3 sm:gap-3">
+      <sm-button variant="outline" size="sm" [fullWidth]="true" [label]="'AUTH.SIGNUP' | translate"
+        (clicked)="openRegister.emit()"></sm-button>
+
+      <sm-button variant="primary" size="sm" [fullWidth]="true" [label]="'AUTH.LOGIN' | translate"
+        (clicked)="openLogin.emit()"></sm-button>
+    </div>
+    <!-- <div class="flex items-center gap-3 sm:justify-end">
+      <div class="flex-1 sm:flex-none">
+        <sm-button
+          variant="outline"
+          size="sm"
+          [fullWidth]="true"
+          class="w-full sm:w-auto"
+          [label]="'AUTH.SIGNUP' | translate"
+          (clicked)="openRegister.emit()"
+        ></sm-button>
+      </div>
+
+      <div class="flex-1 sm:flex-none">
+        <sm-button
+          variant="primary"
+          size="sm"
+          [fullWidth]="true"
+          class="w-full sm:w-auto"
+          [label]="'AUTH.LOGIN' | translate"
+          (clicked)="openLogin.emit()"
+        ></sm-button>
+      </div>
+    </div> -->
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="w-full h-full">
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-4">
+    <button class="w-10 h-10 rounded-lg border border-green-700/40 hover:bg-gray-50" (click)="back()">←</button>
+    <div class="text-xl font-semibold text-gray-900">{{ 'REPORTS.TITLE' | translate }}</div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- LEFT: form -->
+    <div class="xl:col-span-2 bg-white rounded-2xl border border-green-700/20 p-6">
+      <app-report-parameters-form
+        [zones]="zones"
+        [phenomena]="phenomena"
+        (cancel)="onCancel()"
+        (generate)="onGenerate($event)">
+      </app-report-parameters-form>
+    </div>
+
+    <!-- RIGHT: list -->
+    <div class="bg-white rounded-2xl border border-green-700/20 p-6">
+      <app-report-list
+        [reports]="filteredReports"
+        [search]="search"
+        (searchChange)="onSearch($event)"
+        (action)="onReportAction($event)">
+      </app-report-list>
+    </div>
+  </div>
+</div>

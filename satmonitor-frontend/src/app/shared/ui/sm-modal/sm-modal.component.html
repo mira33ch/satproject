@@ -1,0 +1,43 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-[1000]"
+  [ngClass]="backdropClass"
+  (click)="backdropClick()"
+  aria-hidden="true"
+></div>
+
+<!-- Modal wrapper -->
+<div class="fixed inset-0 z-[1001] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div
+    #panel
+    tabindex="-1"
+    class=" rounded-2xl bg-white shadow-2xl outline-none max-h-[calc(100vh-2rem)] overflow-auto"
+    [ngClass]="[panelSizeClass, panelClass]"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header (optionnel) -->
+    <div *ngIf="!hideHeader" class="flex items-center justify-between gap-4 px-5 py-4 border-b border-gray-200">
+      <div class="font-bold text-base text-gray-900">
+        <ng-container *ngIf="titleKey; else plainTitle">
+          {{ titleKey | translate: titleParams }}
+        </ng-container>
+        <ng-template #plainTitle>{{ title }}</ng-template>
+      </div>
+
+      <button
+        *ngIf="showCloseButton"
+        type="button"
+        class="rounded-xl p-2 hover:bg-gray-100 text-gray-700"
+        (click)="requestClose()"
+        aria-label="Close"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div [ngClass]="contentClass || 'p-0'">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
