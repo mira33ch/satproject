@@ -4,7 +4,7 @@ pipeline {
 
   environment {
     DOCKERHUB_CREDS = "dockerhub"
-    GITOPS_CREDS    = "github"
+    GITOPS_CREDS    = "github-pat-mira33ch"
     SONAR_SERVER    = "sonar-satmonitor"
     SONAR_SCANNER   = "sonar-scanner"
   }
